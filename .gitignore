@@ -15,3 +15,5 @@ wwwroot_node
 *.code-workspace
 *.nupkg
 .DS_Store
+
+*.db
