@@ -1,133 +1,71 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Xml;
-using System.Xml.Linq;
-using External.ThirdParty.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using TranslationManagement.Api.Controlers;
+using TranslationManagement.Business;
+using TranslationManagement.Dto;
 
-namespace TranslationManagement.Api.Controllers
+namespace TranslationManagement.Api.Controllers;
+
+/// <summary>Allows to manage translation jobs</summary>
+[ApiController]
+[Route("api/jobs")]
+public class TranslationJobController : ControllerBase
 {
-    [ApiController]
-    [Route("api/jobs/[action]")]
-    public class TranslationJobController : ControllerBase
+    private readonly ITranslationJobsBll businessLayer;
+
+    /// <summary>Initializes a new instance of the <see cref="TranslationJobController"/> class.</summary>
+    /// <param name="businessLayer">Translation jobs business layer</param>
+    public TranslationJobController(ITranslationJobsBll businessLayer)
     {
-        public class TranslationJob
-        {
-            public int Id { get; set; }
-            public string CustomerName { get; set; }
-            public string Status { get; set; }
-            public string OriginalContent { get; set; }
-            public string TranslatedContent { get; set; }
-            public double Price { get; set; }
-        }
+        this.businessLayer = businessLayer ?? throw new ArgumentNullException(nameof(businessLayer));
+    }
 
-        static class JobStatuses
-        {
-            internal static readonly string New = "New";
-            internal static readonly string Inprogress = "InProgress";
-            internal static readonly string Completed = "Completed";
-        }
+    /// <summary>Gets all translation jobs</summary>
+    /// <returns>All translation jobs</returns>
+    //TODO: This may be too much and some filtering or paging would be useful
+    [HttpGet]
+    public Task<IReadOnlyCollection<TranslationJobModel>> GetJobs() => businessLayer.GetAllAsync();
 
-        private AppDbContext _context;
-        private readonly ILogger<TranslatorManagementController> _logger;
+    /// <summary>Saves a new translation job</summary>
+    /// <param name="job">The new job to save</param>
+    /// <returns>Task to await to wait for the asynchronous operation to complete</returns>
+    /// <response code="201">The job has been created</response>
+    [HttpPost]
+    [ProducesResponseType(typeof(TranslationJobModel), 201)]
+    public async Task<IActionResult> CreateJob(TranslationJobCreationModel job)
+    {
+        int jobId = await businessLayer.CreateJobAsync(job);
+        job = await businessLayer.GetJobByIdAsync(jobId);
+        return new CreatedResult($"api/jobs/{jobId}", job);
+    }
 
-        public TranslationJobController(IServiceScopeFactory scopeFactory, ILogger<TranslatorManagementController> logger)
-        {
-            _context = scopeFactory.CreateScope().ServiceProvider.GetService<AppDbContext>();
-            _logger = logger;
-        }
+    /// <summary>Saves a new translation job specified by file</summary>
+    /// <param name="file">The file uploaded</param>
+    /// <param name="customer">Customer identification</param>
+    /// <returns>Task to await to wait for the asynchronous operation to complete</returns>
+    /// <response code="201">The job has been created</response>
+    [HttpPost("file")]
+    [ProducesResponseType(typeof(TranslationJobModel), 201)]
+    public async Task<IActionResult> CreateJobWithFile(IFormFile file, string customer)
+    {
+        using var stream = file.OpenReadStream();
+        var job = await businessLayer.CreateJobWithFileAsync(stream, file.ContentType, file.FileName, customer);
+        return new CreatedResult($"api/jobs/{job.Id}", job);
+    }
 
-        [HttpGet]
-        public TranslationJob[] GetJobs()
-        {
-            return _context.TranslationJobs.ToArray();
-        }
-
-        const double PricePerCharacter = 0.01;
-        private void SetPrice(TranslationJob job)
-        {
-            job.Price = job.OriginalContent.Length * PricePerCharacter;
-        }
-
-        [HttpPost]
-        public bool CreateJob(TranslationJob job)
-        {
-            job.Status = "New";
-            SetPrice(job);
-            _context.TranslationJobs.Add(job);
-            bool success = _context.SaveChanges() > 0;
-            if (success)
-            {
-                var notificationSvc = new UnreliableNotificationService();
-                while (!notificationSvc.SendNotification("Job created: " + job.Id).Result)
-                {
-                }
-
-                _logger.LogInformation("New job notification sent");
-            }
-
-            return success;
-        }
-
-        [HttpPost]
-        public bool CreateJobWithFile(IFormFile file, string customer)
-        {
-            var reader = new StreamReader(file.OpenReadStream());
-            string content;
-
-            if (file.FileName.EndsWith(".txt"))
-            {
-                content = reader.ReadToEnd();
-            }
-            else if (file.FileName.EndsWith(".xml"))
-            {
-                var xdoc = XDocument.Parse(reader.ReadToEnd());
-                content = xdoc.Root.Element("Content").Value;
-                customer = xdoc.Root.Element("Customer").Value.Trim();
-            }
-            else
-            {
-                throw new NotSupportedException("unsupported file");
-            }
-
-            var newJob = new TranslationJob()
-            {
-                OriginalContent = content,
-                TranslatedContent = "",
-                CustomerName = customer,
-            };
-
-            SetPrice(newJob);
-
-            return CreateJob(newJob);
-        }
-
-        [HttpPost]
-        public string UpdateJobStatus(int jobId, int translatorId, string newStatus = "")
-        {
-            _logger.LogInformation("Job status update request received: " + newStatus + " for job " + jobId.ToString() + " by translator " + translatorId);
-            if (typeof(JobStatuses).GetProperties().Count(prop => prop.Name == newStatus) == 0)
-            {
-                return "invalid status";
-            }
-
-            var job = _context.TranslationJobs.Single(j => j.Id == jobId);
-
-            bool isInvalidStatusChange = (job.Status == JobStatuses.New && newStatus == JobStatuses.Completed) ||
-                                         job.Status == JobStatuses.Completed || newStatus == JobStatuses.New;
-            if (isInvalidStatusChange)
-            {
-                return "invalid status change";
-            }
-
-            job.Status = newStatus;
-            _context.SaveChanges();
-            return "updated";
-        }
+    /// <summary>Updates translation job status</summary>
+    /// <param name="jobId">ID of job to update status for</param>
+    /// <param name="translatorId">ID of translator who's requesting the update</param>
+    /// <param name="newStatus">New status to save</param>
+    /// <returns>Task to await to wait for the asynchronous operation to complete</returns>
+    /// <response code="204">The status has been changed</response>
+    [HttpPut($"{{{nameof(jobId)}}}/status")]
+    [ProducesResponseType(typeof(void), 204)]
+    public async Task<IActionResult> UpdateJobStatus(int jobId, int translatorId, string newStatus = "")
+    {
+        await businessLayer.UpdateJobStatusAsync(jobId, translatorId, newStatus);
+        return NoContent();
     }
 }

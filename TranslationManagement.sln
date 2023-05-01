@@ -1,24 +1,43 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationManagement.Api", "TranslationManagement.Api\TranslationManagement.Api.csproj", "{CF6B0818-2953-48BA-9036-3F75D92E0F13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Api", "TranslationManagement.Api\TranslationManagement.Api.csproj", "{CF6B0818-2953-48BA-9036-3F75D92E0F13}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8547FBF7-7179-421B-80BD-2E293D0807A6}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
 		TranslationManagement.Api\Dockerfile = TranslationManagement.Api\Dockerfile
 		readme.md = readme.md
+		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "External.ThirdParty.Services", "External.ThirdParty.Services\External.ThirdParty.Services.csproj", "{173F3433-4139-404D-A843-BAF43F6164FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.ThirdParty.Services", "External.ThirdParty.Services\External.ThirdParty.Services.csproj", "{173F3433-4139-404D-A843-BAF43F6164FA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleData", "SampleData", "{B01CF39A-A9B6-468F-9BC6-06D418302340}"
 	ProjectSection(SolutionItems) = preProject
 		job.txt = job.txt
 		job.xml = job.xml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationManagement.Data", "TranslationManagement.Data\TranslationManagement.Data.csproj", "{B064E9EC-9A3A-43D2-BA51-D822009DE3AE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Business", "TranslationManagement.Business\TranslationManagement.Business.csproj", "{F1B094AF-26B6-4D59-A28B-12917F54F50C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data.Abstrations", "TranslationManagement.Data.Abstrations\TranslationManagement.Data.Abstrations.csproj", "{A54C7892-F175-47CF-987A-BD67EEDE37A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Business.Abstrations", "TranslationManagement.Business.Abstrations\TranslationManagement.Business.Abstrations.csproj", "{477DDD7D-5989-4B48-B123-C4DF4CCFA906}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data.Migrations", "TranslationManagement.Data.Migrations\TranslationManagement.Data.Migrations.csproj", "{2A378708-1A71-4908-AE70-4D05F70F9566}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data.Model", "TranslationManagement.Data.Model\TranslationManagement.Data.Model.csproj", "{E55B6CBC-2C89-48B6-BE05-1958FD1C4581}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Dto", "TranslationManagement.Dto\TranslationManagement.Dto.csproj", "{CE4415ED-8385-4687-9D57-8F0B9FDB5FE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationManagement.Common", "TranslationManagement.Common\TranslationManagement.Common.csproj", "{3C00BFFC-3C89-4490-9188-C38CA5024B02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +53,38 @@ Global
 		{173F3433-4139-404D-A843-BAF43F6164FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{173F3433-4139-404D-A843-BAF43F6164FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{173F3433-4139-404D-A843-BAF43F6164FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B064E9EC-9A3A-43D2-BA51-D822009DE3AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B064E9EC-9A3A-43D2-BA51-D822009DE3AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B064E9EC-9A3A-43D2-BA51-D822009DE3AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B064E9EC-9A3A-43D2-BA51-D822009DE3AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1B094AF-26B6-4D59-A28B-12917F54F50C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1B094AF-26B6-4D59-A28B-12917F54F50C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1B094AF-26B6-4D59-A28B-12917F54F50C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1B094AF-26B6-4D59-A28B-12917F54F50C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A54C7892-F175-47CF-987A-BD67EEDE37A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A54C7892-F175-47CF-987A-BD67EEDE37A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A54C7892-F175-47CF-987A-BD67EEDE37A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A54C7892-F175-47CF-987A-BD67EEDE37A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{477DDD7D-5989-4B48-B123-C4DF4CCFA906}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{477DDD7D-5989-4B48-B123-C4DF4CCFA906}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{477DDD7D-5989-4B48-B123-C4DF4CCFA906}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{477DDD7D-5989-4B48-B123-C4DF4CCFA906}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A378708-1A71-4908-AE70-4D05F70F9566}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A378708-1A71-4908-AE70-4D05F70F9566}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A378708-1A71-4908-AE70-4D05F70F9566}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A378708-1A71-4908-AE70-4D05F70F9566}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E55B6CBC-2C89-48B6-BE05-1958FD1C4581}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E55B6CBC-2C89-48B6-BE05-1958FD1C4581}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E55B6CBC-2C89-48B6-BE05-1958FD1C4581}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E55B6CBC-2C89-48B6-BE05-1958FD1C4581}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE4415ED-8385-4687-9D57-8F0B9FDB5FE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE4415ED-8385-4687-9D57-8F0B9FDB5FE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE4415ED-8385-4687-9D57-8F0B9FDB5FE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE4415ED-8385-4687-9D57-8F0B9FDB5FE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C00BFFC-3C89-4490-9188-C38CA5024B02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C00BFFC-3C89-4490-9188-C38CA5024B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C00BFFC-3C89-4490-9188-C38CA5024B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C00BFFC-3C89-4490-9188-C38CA5024B02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
