@@ -13,4 +13,7 @@ public class TranslationJobModel : TranslationJobCreationModel
     public string TranslatedContent { get; set; }
     /// <summary>Gets or sets job price</summary>
     public double Price { get; set; }
+
+    /// <summary>Gets or sets ID of translator who works or worked on the job</summary>
+    public int? TranslatorId { get; set; }
 }

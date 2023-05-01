@@ -63,9 +63,22 @@ public class TranslationJobController : ControllerBase
     /// <response code="204">The status has been changed</response>
     [HttpPut($"{{{nameof(jobId)}}}/status")]
     [ProducesResponseType(typeof(void), 204)]
-    public async Task<IActionResult> UpdateJobStatus(int jobId, int translatorId, string newStatus = "")
+    public async Task<IActionResult> UpdateJobStatus(int jobId, int translatorId, string newStatus)
     {
         await businessLayer.UpdateJobStatusAsync(jobId, translatorId, newStatus);
+        return NoContent();
+    }
+
+    /// <summary>Associates translator with job</summary>
+    /// <param name="jobId">ID of job to update translator of</param>
+    /// <param name="translatorId">ID of translator to be associated with the job</param>
+    /// <returns>Task to await to wait for the asynchronous operation to complete</returns>
+    /// <response code="204">The translator has been changed</response>
+    [HttpPut($"{{{nameof(jobId)}}}/translator")]
+    [ProducesResponseType(typeof(void), 204)]
+    public async Task<IActionResult> SetTranslator(int jobId, int translatorId)
+    {
+        await businessLayer.SetTranslatorAsync(jobId, translatorId);
         return NoContent();
     }
 }

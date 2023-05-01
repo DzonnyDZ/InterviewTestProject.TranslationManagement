@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using External.ThirdParty.Services;
+﻿using External.ThirdParty.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TranslationManagement.Business.JobReaders;
@@ -18,6 +13,7 @@ namespace TranslationManagement.Business.Tests;
 public class TranslationJobsBllTests : BllTests
 {
     private Mock<ITranslationJobsRepository> repo;
+    private Mock<ITranslatorsRepository> transRepo;
     private Mock<INotificationService> notifSvc;
     private Mock<IJobFileReaderFactory> readerFact;
     private ILogger<TranslationJobsBll> bllLogger;
@@ -32,6 +28,7 @@ public class TranslationJobsBllTests : BllTests
     public void SetUp()
     {
         repo = new Mock<ITranslationJobsRepository>();
+        transRepo = new Mock<ITranslatorsRepository>();
         notifSvc = new Mock<INotificationService>();
         readerFact = new Mock<IJobFileReaderFactory>();
     }
@@ -49,14 +46,16 @@ public class TranslationJobsBllTests : BllTests
         const int jobId = 235;
         const int translatorId = 6;
         repo.Setup(r => r.GetByIdAsync(jobId)).Returns(Task.FromResult(new TranslationJob { Id = jobId, CustomerName = "Bla", OriginalContent = "Bla bla", Status = from, Price = 65.3 }));
-        repo.Setup(r => r.UpdateJobStatusAsync(jobId, to)).Returns(Task.CompletedTask).Verifiable();
-        var bll = new TranslationJobsBll(repo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
+        repo.Setup(r => r.UpdateJobStatusAsync(jobId, to, It.IsAny<int?>())).Returns(Task.CompletedTask).Verifiable();
+        var translator = new Translator { Id = translatorId, CreditCardNumber = "123", Name = "Jan Horák", HourlyRate = "35", Status = "Certified" };
+        transRepo.Setup(r => r.GetByIdAsync(translatorId)).Returns(Task.FromResult(translator));
+        var bll = new TranslationJobsBll(repo.Object, transRepo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
 
         //Act
         await bll.UpdateJobStatusAsync(jobId, translatorId, to);
 
         //Assert
-        repo.Verify(r => r.UpdateJobStatusAsync(jobId, to), from == to ? Times.Never : Times.Once);
+        repo.Verify(r => r.UpdateJobStatusAsync(jobId, to, It.IsAny<int?>()), from == to ? Times.Never : Times.Once);
     }
 
     [Test]
@@ -72,12 +71,12 @@ public class TranslationJobsBllTests : BllTests
         const int jobId = 235;
         const int translatorId = 6;
         repo.Setup(r => r.GetByIdAsync(jobId)).Returns(Task.FromResult(new TranslationJob { Id = jobId, CustomerName = "Bla", OriginalContent = "Bla bla", Status = from, Price = 65.3 }));
-        repo.Setup(r => r.UpdateJobStatusAsync(jobId, to)).Returns(Task.CompletedTask).Verifiable();
-        var bll = new TranslationJobsBll(repo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
+        repo.Setup(r => r.UpdateJobStatusAsync(jobId, to, It.IsAny<int?>())).Returns(Task.CompletedTask).Verifiable();
+        var bll = new TranslationJobsBll(repo.Object, transRepo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
 
         //Act & Assert
         Assert.ThrowsAsync<InvalidOperationException>(async () => await bll.UpdateJobStatusAsync(jobId, translatorId, to));
-        repo.Verify(r => r.UpdateJobStatusAsync(jobId, to), Times.Never);
+        repo.Verify(r => r.UpdateJobStatusAsync(jobId, to, It.IsAny<int?>()), Times.Never);
     }
 
     [Test]
@@ -89,21 +88,21 @@ public class TranslationJobsBllTests : BllTests
         const int jobId = 235;
         const int translatorId = 6;
         repo.Setup(r => r.GetByIdAsync(jobId)).Returns(Task.FromResult(new TranslationJob { Id = jobId, CustomerName = "Bla", OriginalContent = "Bla bla", Status = "Unknown", Price = 65.3 })).Verifiable();
-        repo.Setup(r => r.UpdateJobStatusAsync(jobId, to)).Returns(Task.CompletedTask).Verifiable();
-        var bll = new TranslationJobsBll(repo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
+        repo.Setup(r => r.UpdateJobStatusAsync(jobId, to, It.IsAny<int?>())).Returns(Task.CompletedTask).Verifiable();
+        var bll = new TranslationJobsBll(repo.Object, transRepo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
 
         //Act & Assert
         var ex = Assert.ThrowsAsync<ArgumentException>(async () => await bll.UpdateJobStatusAsync(jobId, translatorId, to));
         Assert.That(ex.ParamName, Is.EqualTo("status"));
         repo.Verify(r => r.GetByIdAsync(jobId), Times.Never);
-        repo.Verify(r => r.UpdateJobStatusAsync(jobId, to), Times.Never);
+        repo.Verify(r => r.UpdateJobStatusAsync(jobId, to, It.IsAny<int?>()), Times.Never);
     }
 
     [Test]
     public async Task NotifyOnNewJob_PermanentFalse()
     {
         //Arrange
-        var bll = new TranslationJobsBll(repo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
+        var bll = new TranslationJobsBll(repo.Object, transRepo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
         bll.ExponentialBackOffInitialDelay = 1;
         notifSvc.Setup(s => s.SendNotification(It.IsAny<string>())).Returns(Task.FromResult(false)).Verifiable();
         var entity = new TranslationJob { CustomerName = "DPD", Id = 6, OriginalContent = "Bla bla", Price = 3.6, Status = TranslationJobsBll.JobStatus.New };
@@ -120,7 +119,7 @@ public class TranslationJobsBllTests : BllTests
     public async Task NotifyOnNewJob_PermanentFailure()
     {
         //Arrange
-        var bll = new TranslationJobsBll(repo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
+        var bll = new TranslationJobsBll(repo.Object, transRepo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
         bll.ExponentialBackOffInitialDelay = 1;
         notifSvc.Setup(s => s.SendNotification(It.IsAny<string>())).Throws<ApplicationException>().Verifiable();
         var entity = new TranslationJob { CustomerName = "DPD", Id = 6, OriginalContent = "Bla bla", Price = 3.6, Status = TranslationJobsBll.JobStatus.New };
@@ -137,7 +136,7 @@ public class TranslationJobsBllTests : BllTests
     public async Task NotifyOnNewJob_Success()
     {
         //Arrange
-        var bll = new TranslationJobsBll(repo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
+        var bll = new TranslationJobsBll(repo.Object, transRepo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
         notifSvc.Setup(s => s.SendNotification(It.IsAny<string>())).Returns(Task.FromResult(true)).Verifiable();
         var entity = new TranslationJob { CustomerName = "DPD", Id = 6, OriginalContent = "Bla bla", Price = 3.6, Status = TranslationJobsBll.JobStatus.New };
 
@@ -159,7 +158,7 @@ public class TranslationJobsBllTests : BllTests
     public async Task NotifyOnNewJob_EventualSuccess(int when)
     {
         //Arrange
-        var bll = new TranslationJobsBll(repo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
+        var bll = new TranslationJobsBll(repo.Object, transRepo.Object, notifSvc.Object, Mapper, readerFact.Object, bllLogger);
         bll.ExponentialBackOffInitialDelay = 1;
         int i = 0;
         notifSvc.Setup(s => s.SendNotification(It.IsAny<string>())).Callback((string message) =>

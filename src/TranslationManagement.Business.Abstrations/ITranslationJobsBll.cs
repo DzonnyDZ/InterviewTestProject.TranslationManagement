@@ -25,10 +25,16 @@ public interface ITranslationJobsBll
 
     /// <summary>Updates translation job status</summary>
     /// <param name="jobId">ID of the job to update status of</param>
-    /// <param name="translatorId">Identifies translator who's requesting the update</param>
+    /// <param name="translatorId">Identifies translator who's requesting the update (if is starting to be worked on, the translator will be associated with the job)</param>
     /// <param name="status">The new status</param>
     /// <returns>Task to await to wait for the asynchronous operation to complete</returns>
     Task UpdateJobStatusAsync(int jobId, int translatorId, string status);
+
+    /// <summary>Updates translator associated with a translation job</summary>
+    /// <param name="jobId">ID of the job to update status of</param>
+    /// <param name="translatorId">ID of the translator to associate</param>
+    /// <returns>Task to await to wait for the asynchronous operation to complete</returns>
+    Task SetTranslatorAsync(int jobId, int translatorId);
 
     /// <summary>Gets <see cref="TranslationJobModel"/> identified by ID</summary>
     /// <param name="id">ID of job to get</param>

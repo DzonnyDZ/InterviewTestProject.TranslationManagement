@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using AutoMapper;
 using External.ThirdParty.Services;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ namespace TranslationManagement.Business;
 internal class TranslationJobsBll : ITranslationJobsBll
 {
     private readonly ITranslationJobsRepository repository;
+    private readonly ITranslatorsRepository translatorsRepo;
     private readonly IMapper mapper;
     private readonly INotificationService notificationService;
     private readonly ILogger logger;
@@ -24,18 +26,20 @@ internal class TranslationJobsBll : ITranslationJobsBll
     private static readonly string[] JobStatuses =
         (from f in typeof(JobStatus).GetFields(BindingFlags.Public | BindingFlags.Static) select (string)f.GetValue(null)!).ToArray();
 
-    /// <summary>Gets or sets initial delay (in milliseconds) to wait (before next call) when <see cref="INotificationService.SendNotification"/> call failes</summary>
+    /// <summary>Gets or sets initial delay (in milliseconds) to wait (before next call) when <see cref="INotificationService.SendNotification"/> call fails</summary>
     internal int ExponentialBackOffInitialDelay { get; set; } = 500;
 
     /// <summary>Initializes a new instance of the <see cref="TranslationJobsBll"/> class.</summary>
-    /// <param name="repository">Provides access to <see cref="TranslationJob"/> database storage</param>
+    /// <param name="repository">Provides access to <see cref="TranslationJob"/>s database storage</param>
+    /// <param name="translatorsRepo">Provides access to <see cref="Translator"/>s database storage</param>
     /// <param name="notificationService">Sends notifications about jobs</param>
     /// <param name="mapper">Performs mapping from data model to DTO</param>
     /// <param name="readerFactory">Creates instances of <see cref="TxtJobReader"/> implementations</param>
     /// <param name="logger">Logging sink</param>
-    public TranslationJobsBll(ITranslationJobsRepository repository, INotificationService notificationService, IMapper mapper, IJobFileReaderFactory readerFactory, ILogger<TranslationJobsBll> logger)
+    public TranslationJobsBll(ITranslationJobsRepository repository, ITranslatorsRepository translatorsRepo, INotificationService notificationService, IMapper mapper, IJobFileReaderFactory readerFactory, ILogger<TranslationJobsBll> logger)
     {
         this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        this.translatorsRepo = translatorsRepo ?? throw new ArgumentNullException(nameof(translatorsRepo));
         this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
         this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         this.readerFactory = readerFactory ?? throw new ArgumentNullException(nameof(readerFactory));
@@ -121,7 +125,7 @@ internal class TranslationJobsBll : ITranslationJobsBll
 
     /// <summary>Updates translation job status</summary>
     /// <param name="jobId">ID of the job to update status of</param>
-    /// <param name="translatorId">Identifies translator who's requesting the update</param>
+    /// <param name="translatorId">Identifies translator who's requesting the update (if is starting to be worked on, the translator will be associated with the job)</param>
     /// <param name="status">The new status</param>
     /// <returns>Task to await to wait for the asynchronous operation to complete</returns>
     public async Task UpdateJobStatusAsync(int jobId, int translatorId, string status)
@@ -140,7 +144,28 @@ internal class TranslationJobsBll : ITranslationJobsBll
         if (isInvalidStatusChange)
             throw new InvalidOperationException($"Invalid job status transition from '{job.Status}' to '{status}'");
 
-        await repository.UpdateJobStatusAsync(jobId, status).ConfigureAwait(false);
+        if (job.Status == JobStatus.New && status == JobStatus.InProgress)
+        {
+            var translator = await translatorsRepo.GetByIdAsync(translatorId).ConfigureAwait(false);
+            if (translator == null) throw new EntityNotFoundException(typeof(Translator), translatorId);
+            if (translator.Status != "Certified")
+                throw new ValidationException($"Only Certified translators can work on jobs, translator {translator.Name} ({translator.Id}) is not certified but {translator.Status}");
+        }
+
+        await repository.UpdateJobStatusAsync(jobId, status, job.Status == JobStatus.New && status == JobStatus.InProgress ? translatorId : null).ConfigureAwait(false);
+    }
+
+    /// <summary>Updates translator associated with a translation job</summary>
+    /// <param name="jobId">ID of the job to update status of</param>
+    /// <param name="translatorId">ID of the translator to associate</param>
+    /// <returns>Task to await to wait for the asynchronous operation to complete</returns>
+    public async Task SetTranslatorAsync(int jobId, int translatorId)
+    {
+        var translator = await translatorsRepo.GetByIdAsync(translatorId).ConfigureAwait(false);
+        if (translator == null) throw new EntityNotFoundException(typeof(Translator), translatorId);
+        if (translator.Status != "Certified")
+            throw new ValidationException($"Only Certified translators can work on jobs, translator {translator.Name} ({translator.Id}) is not certified but {translator.Status}");
+        await repository.SetJobTranslatorAsync(jobId, translatorId).ConfigureAwait(false);
     }
 
     /// <summary>Gets <see cref="TranslationJobModel"/> identified by ID</summary>

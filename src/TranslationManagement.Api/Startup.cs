@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using TranslationManagement.Business;
 using TranslationManagement.Data;
+using TranslationManagement.Dto;
 
 namespace TranslationManagement.Api;
 
@@ -39,7 +40,8 @@ public class Startup
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "TranslationManagement.Api", Version = "v1" });
-            c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, typeof(Startup).Assembly.GetName().Name + ".xml"));
+            c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, typeof(Startup).Assembly.GetName().Name + ".xml"), true);
+            c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, typeof(TranslatorModel).Assembly.GetName().Name + ".xml"));
         });
 
         services.AddDbContext<AppDbContext>(options =>
