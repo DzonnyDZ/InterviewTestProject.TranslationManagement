@@ -3,19 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Api", "TranslationManagement.Api\TranslationManagement.Api.csproj", "{CF6B0818-2953-48BA-9036-3F75D92E0F13}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8547FBF7-7179-421B-80BD-2E293D0807A6}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
-		Directory.Build.props = Directory.Build.props
-		TranslationManagement.Api\Dockerfile = TranslationManagement.Api\Dockerfile
 		readme.md = readme.md
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.ThirdParty.Services", "External.ThirdParty.Services\External.ThirdParty.Services.csproj", "{173F3433-4139-404D-A843-BAF43F6164FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.ThirdParty.Services", "lib\External.ThirdParty.Services\External.ThirdParty.Services.csproj", "{173F3433-4139-404D-A843-BAF43F6164FA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleData", "SampleData", "{B01CF39A-A9B6-468F-9BC6-06D418302340}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,21 +19,36 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleData", "SampleData", 
 		job.xml = job.xml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationManagement.Data", "TranslationManagement.Data\TranslationManagement.Data.csproj", "{B064E9EC-9A3A-43D2-BA51-D822009DE3AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data", "src\TranslationManagement.Data\TranslationManagement.Data.csproj", "{B064E9EC-9A3A-43D2-BA51-D822009DE3AE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Business", "TranslationManagement.Business\TranslationManagement.Business.csproj", "{F1B094AF-26B6-4D59-A28B-12917F54F50C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Business", "src\TranslationManagement.Business\TranslationManagement.Business.csproj", "{F1B094AF-26B6-4D59-A28B-12917F54F50C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data.Abstrations", "TranslationManagement.Data.Abstrations\TranslationManagement.Data.Abstrations.csproj", "{A54C7892-F175-47CF-987A-BD67EEDE37A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data.Abstrations", "src\TranslationManagement.Data.Abstrations\TranslationManagement.Data.Abstrations.csproj", "{A54C7892-F175-47CF-987A-BD67EEDE37A9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Business.Abstrations", "TranslationManagement.Business.Abstrations\TranslationManagement.Business.Abstrations.csproj", "{477DDD7D-5989-4B48-B123-C4DF4CCFA906}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Business.Abstrations", "src\TranslationManagement.Business.Abstrations\TranslationManagement.Business.Abstrations.csproj", "{477DDD7D-5989-4B48-B123-C4DF4CCFA906}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data.Migrations", "TranslationManagement.Data.Migrations\TranslationManagement.Data.Migrations.csproj", "{2A378708-1A71-4908-AE70-4D05F70F9566}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data.Migrations", "src\TranslationManagement.Data.Migrations\TranslationManagement.Data.Migrations.csproj", "{2A378708-1A71-4908-AE70-4D05F70F9566}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data.Model", "TranslationManagement.Data.Model\TranslationManagement.Data.Model.csproj", "{E55B6CBC-2C89-48B6-BE05-1958FD1C4581}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Data.Model", "src\TranslationManagement.Data.Model\TranslationManagement.Data.Model.csproj", "{E55B6CBC-2C89-48B6-BE05-1958FD1C4581}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Dto", "TranslationManagement.Dto\TranslationManagement.Dto.csproj", "{CE4415ED-8385-4687-9D57-8F0B9FDB5FE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Dto", "src\TranslationManagement.Dto\TranslationManagement.Dto.csproj", "{CE4415ED-8385-4687-9D57-8F0B9FDB5FE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationManagement.Common", "TranslationManagement.Common\TranslationManagement.Common.csproj", "{3C00BFFC-3C89-4490-9188-C38CA5024B02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Common", "src\TranslationManagement.Common\TranslationManagement.Common.csproj", "{3C00BFFC-3C89-4490-9188-C38CA5024B02}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{36FA1457-AAD9-4828-B6B3-7CE1A0F24118}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{6026FA7E-9F8C-4565-9977-69D996E61320}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{41AA4FA7-E71F-4E6C-93C5-A8449F2BDFA3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranslationManagement.Api", "src\TranslationManagement.Api\TranslationManagement.Api.csproj", "{AD326CBB-8F9B-42F4-915F-9C805D86AA4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationManagement.Business.Tests", "test\TranslationManagement.Business.Tests\TranslationManagement.Business.Tests.csproj", "{59A58B34-AB58-40C8-970B-D45AA3D36672}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationManagement.Test.Utilities", "test\TranslationManagement.Test.Utilities\TranslationManagement.Test.Utilities.csproj", "{55F994FF-7B84-4C51-8962-720581DDDD04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +56,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CF6B0818-2953-48BA-9036-3F75D92E0F13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF6B0818-2953-48BA-9036-3F75D92E0F13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF6B0818-2953-48BA-9036-3F75D92E0F13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF6B0818-2953-48BA-9036-3F75D92E0F13}.Release|Any CPU.Build.0 = Release|Any CPU
 		{173F3433-4139-404D-A843-BAF43F6164FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{173F3433-4139-404D-A843-BAF43F6164FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{173F3433-4139-404D-A843-BAF43F6164FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -85,9 +92,35 @@ Global
 		{3C00BFFC-3C89-4490-9188-C38CA5024B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C00BFFC-3C89-4490-9188-C38CA5024B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C00BFFC-3C89-4490-9188-C38CA5024B02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD326CBB-8F9B-42F4-915F-9C805D86AA4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD326CBB-8F9B-42F4-915F-9C805D86AA4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD326CBB-8F9B-42F4-915F-9C805D86AA4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD326CBB-8F9B-42F4-915F-9C805D86AA4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59A58B34-AB58-40C8-970B-D45AA3D36672}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59A58B34-AB58-40C8-970B-D45AA3D36672}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59A58B34-AB58-40C8-970B-D45AA3D36672}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59A58B34-AB58-40C8-970B-D45AA3D36672}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55F994FF-7B84-4C51-8962-720581DDDD04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55F994FF-7B84-4C51-8962-720581DDDD04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55F994FF-7B84-4C51-8962-720581DDDD04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55F994FF-7B84-4C51-8962-720581DDDD04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{173F3433-4139-404D-A843-BAF43F6164FA} = {6026FA7E-9F8C-4565-9977-69D996E61320}
+		{B064E9EC-9A3A-43D2-BA51-D822009DE3AE} = {36FA1457-AAD9-4828-B6B3-7CE1A0F24118}
+		{F1B094AF-26B6-4D59-A28B-12917F54F50C} = {36FA1457-AAD9-4828-B6B3-7CE1A0F24118}
+		{A54C7892-F175-47CF-987A-BD67EEDE37A9} = {36FA1457-AAD9-4828-B6B3-7CE1A0F24118}
+		{477DDD7D-5989-4B48-B123-C4DF4CCFA906} = {36FA1457-AAD9-4828-B6B3-7CE1A0F24118}
+		{2A378708-1A71-4908-AE70-4D05F70F9566} = {36FA1457-AAD9-4828-B6B3-7CE1A0F24118}
+		{E55B6CBC-2C89-48B6-BE05-1958FD1C4581} = {36FA1457-AAD9-4828-B6B3-7CE1A0F24118}
+		{CE4415ED-8385-4687-9D57-8F0B9FDB5FE1} = {36FA1457-AAD9-4828-B6B3-7CE1A0F24118}
+		{3C00BFFC-3C89-4490-9188-C38CA5024B02} = {36FA1457-AAD9-4828-B6B3-7CE1A0F24118}
+		{AD326CBB-8F9B-42F4-915F-9C805D86AA4A} = {36FA1457-AAD9-4828-B6B3-7CE1A0F24118}
+		{59A58B34-AB58-40C8-970B-D45AA3D36672} = {41AA4FA7-E71F-4E6C-93C5-A8449F2BDFA3}
+		{55F994FF-7B84-4C51-8962-720581DDDD04} = {41AA4FA7-E71F-4E6C-93C5-A8449F2BDFA3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {821E39E6-0BB8-498C-9510-D913968AA6FF}

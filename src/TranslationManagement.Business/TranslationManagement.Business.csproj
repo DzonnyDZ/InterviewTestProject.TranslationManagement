@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\External.ThirdParty.Services\External.ThirdParty.Services.csproj" />
+    <ProjectReference Include="..\..\lib\External.ThirdParty.Services\External.ThirdParty.Services.csproj" />
     <ProjectReference Include="..\TranslationManagement.Business.Abstrations\TranslationManagement.Business.Abstrations.csproj" />
     <ProjectReference Include="..\TranslationManagement.Common\TranslationManagement.Common.csproj" />
     <ProjectReference Include="..\TranslationManagement.Data.Abstrations\TranslationManagement.Data.Abstrations.csproj" />

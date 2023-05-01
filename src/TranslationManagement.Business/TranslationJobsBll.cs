@@ -24,6 +24,9 @@ internal class TranslationJobsBll : ITranslationJobsBll
     private static readonly string[] JobStatuses =
         (from f in typeof(JobStatus).GetFields(BindingFlags.Public | BindingFlags.Static) select (string)f.GetValue(null)!).ToArray();
 
+    /// <summary>Gets or sets initial delay (in milliseconds) to wait (before next call) when <see cref="INotificationService.SendNotification"/> call failes</summary>
+    internal int ExponentialBackOffInitialDelay { get; set; } = 500;
+
     /// <summary>Initializes a new instance of the <see cref="TranslationJobsBll"/> class.</summary>
     /// <param name="repository">Provides access to <see cref="TranslationJob"/> database storage</param>
     /// <param name="notificationService">Sends notifications about jobs</param>
@@ -58,13 +61,21 @@ internal class TranslationJobsBll : ITranslationJobsBll
         entity.Status = JobStatus.New;
         SetPrice(entity);
         await repository.InsertAsync(entity).ConfigureAwait(false);
+        await NotifyOnNewJobAsync(entity).ConfigureAwait(false);
+        return entity.Id;
+    }
 
+    /// <summary>Sends notification via notification service that a new job has been created</summary>
+    /// <param name="entity">The job that has been created</param>
+    /// <returns>True if notification was sent successfully; false otherwise</returns>
+    internal async Task<bool> NotifyOnNewJobAsync(TranslationJob entity)
+    {
         bool success;
         int attempt = 0;
         do
         {
-            if (attempt++ > 0) await Task.Delay(TimeSpan.FromMilliseconds(500 * Math.Pow(2, attempt - 1))).ConfigureAwait(false); //Exponential back-off; base 500ms, factor 2
-            
+            if (attempt++ > 0) await Task.Delay(TimeSpan.FromMilliseconds(ExponentialBackOffInitialDelay * Math.Pow(2, attempt - 1))).ConfigureAwait(false); //Exponential back-off; base ExponentialBackOffInitialDelay, factor 2
+
             try
             {
                 success = await notificationService.SendNotification("Job created: " + entity.Id).ConfigureAwait(false);
@@ -82,7 +93,7 @@ internal class TranslationJobsBll : ITranslationJobsBll
         else
             logger.LogError("Failed to send new job notification");
 
-        return entity.Id;
+        return success;
     }
 
     /// <summary>Creates a new translation job from file</summary>
@@ -117,7 +128,7 @@ internal class TranslationJobsBll : ITranslationJobsBll
     {
         logger.LogInformation("Job status update request received: {status} for job {jobId} by translator {translatorId}", status, jobId, translatorId);
         if (JobStatuses.All(s => s != status))
-            throw new ArgumentException($"Invalid job status '{status}'");
+            throw new ArgumentException($"Invalid job status '{status}'", nameof(status));
 
         var job = await repository.GetByIdAsync(jobId).ConfigureAwait(false);
         if (job == null) throw new EntityNotFoundException(typeof(TranslationJob), jobId);
@@ -138,7 +149,7 @@ internal class TranslationJobsBll : ITranslationJobsBll
     public async Task<TranslationJobModel> GetJobByIdAsync(int id) => mapper.Map<TranslationJobModel>(await repository.GetByIdAsync(id).ConfigureAwait(false));
 
     /// <summary>Defines constants of possible job statuses</summary>
-    private static class JobStatus
+    internal static class JobStatus
     {
         /// <summary>New translation job (translation didn't start yet)</summary>
         public const string New = nameof(New);
