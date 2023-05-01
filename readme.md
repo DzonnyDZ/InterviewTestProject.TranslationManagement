@@ -41,3 +41,27 @@ Our tools of choice are React (CRA) + Typescript but use what you prefer
 Clone/fork to your repo and deliver as a link to your repo or share the `git-archive`. 
 Commit to master, follow usual git culture. 
 Please include a note regarding how to run.
+
+# How to run
+- In Visual Studio
+  - Make sure that startup project is `src/TranslationManagement.Api`
+  - Profile can be either `IIS Express` or `TranslationManagement.Api` (preferred) 
+  - Run the solution
+    - It should automatically open browser with Swagger UI
+    - If not navigate to http://localhost:5000/swagger/index.html (or us IIS express systray icon if you ran IIS Express profile)
+
+# Note on deliverables
+- Additional features implemented (together)
+  - When setting status of job to `InProgress` the translator will be associated with the job
+    - Here is also the business rule validation
+  - New endpoint implemented to associate translators with jobs
+    - Here is also the business rule validation
+  - No endpoint implemented to retrieve translators associated with jobs, it can bee seen in job object retrieved by the job list endpoint.
+- Notable thing which is **not** done:
+  - Exception handling - due to this any exception thrown inside of the application causes the request to finish with 500
+    - This is usually done by some __Exception Handling Middleware_
+      which can intercept the exceptions and translate them to proper 4xx response
+      (if the exceptions are understood) and leave 500 only for those which are not understood
+      (or which logically deserve 500)
+    - I was often communicating this via `Exception.Data` property
+  - Frontend, as it is not my expertise. 
